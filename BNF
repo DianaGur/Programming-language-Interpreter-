@@ -1,0 +1,13 @@
+<program> ::= <expression> | <definition> <program>
+<expression> ::= <atom> | "(" <arithmetic> ")" | "(" <expression>* ")"
+<arithmetic> ::= <atom> "+" <atom> | <atom> "-" <atom> | <atom> "*" <atom> | <atom> "/" <atom>
+<atom> ::= <number> | <identifier>
+<number> ::= <integer> | <float>
+<definition> ::= "(" "define" <identifier> "(" <parameters> ")" <expression> ")"
+<parameters> ::= <identifier> | <identifier> <parameters>
+<identifier> ::= <letter> <alphanumeric>*
+<integer> ::= <digit>+
+<float> ::= <digit>+ "." <digit>+
+<letter> ::= "a" | "b" | ... | "z" | "A" | "B" | ... | "Z"
+<alphanumeric> ::= <letter> | <digit>
+<digit> ::= "0" | "1" | ... | "9"
