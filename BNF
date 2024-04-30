@@ -1,13 +1,15 @@
-<program> ::= <expression> | <definition> <program>
-<expression> ::= <atom> | "(" <arithmetic> ")" | "(" <expression>* ")"
-<arithmetic> ::= <atom> "+" <atom> | <atom> "-" <atom> | <atom> "*" <atom> | <atom> "/" <atom>
-<atom> ::= <number> | <identifier>
-<number> ::= <integer> | <float>
-<definition> ::= "(" "define" <identifier> "(" <parameters> ")" <expression> ")"
+<program> ::= <expression>
+<expression> ::= <atom> | <if statment> | <arithmetic> | <loop>
+<loop> ::= "while" <condition> ":" <expression>
+<if statment> ::= "if" <condition> "then" <if statment> | "if" <condition> "then" <arithmetic> | "if" <condition> "then" <loop>
+<condition> ::= (<logic operation> <atom> <atom>) | (<logic operation> <arithmetic> <atom>) | (<logic operation> <arithmetic> <arithmetic>)
+<arithmetic> ::= (<operation>' '<atom>' '<atom>) | (<operation>' '<arithmetic>' '<atom>) | (<operation>' '<arithmetic>' '<arithmetic>)
+<atom> ::= <number> | <parameters>
 <parameters> ::= <identifier> | <identifier> <parameters>
 <identifier> ::= <letter> <alphanumeric>*
 <integer> ::= <digit>+
-<float> ::= <digit>+ "." <digit>+
-<letter> ::= "a" | "b" | ... | "z" | "A" | "B" | ... | "Z"
+<logic operation> ::= "<" | ">" | "=="
+<operation> ::= "+" | "-" | "*" | "/" 
 <alphanumeric> ::= <letter> | <digit>
+<letter> ::= "a" | "b" | ... | "z" 
 <digit> ::= "0" | "1" | ... | "9"
