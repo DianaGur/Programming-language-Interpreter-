@@ -3,7 +3,7 @@ This is a self build programming language using python interpreter.
 
 INTRODUCTION: 
 The program language is very similar to the Lisp PL. The program supports simple math opration such as: addition, subtraction, multiplication and division. 
-Also the program can manage functions and short "If" statments. All this allows you to create very simple programs that can solve complicated problems using 
+Also the program can manage while loops and short "If" statments. All this allows you to create very simple programs that can solve complicated problems using 
 computer. 
 We choose the program to be dynamically typed because those languages offer flexibility and simplicity, as developers do not need to declare variable types explicitly, and they can work with a wide range of data types without restrictions. 
 
@@ -13,4 +13,7 @@ lenght of the veriable names, and the number of veribles that can be used in one
 
 SYNTAX: 
 There is a BNF file of the program that explains an acceptable Before using the langauge please make sure you are familiare with the BNF file of the PL. 
+
+NOTICE: 
+Every syntax error will cause an print massage to the user explaining him why the error accuerd. The if statement or while loop allowed up to three levels.
 
