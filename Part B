@@ -1,0 +1,55 @@
+1.  Implement in a python language, a factorial function in one line by using lambda expressions. 
+
+	factorial = lambda n: 1 if n == 0 else n * factorial(n-1)
+
+2. Write the shortest Python program, that accepts a list of strings
+and returns a single string that is a concatenation of all strings with a space between them. 
+Do not use the "join" function. 
+Use lambda expressions. 
+
+	concat = lambda lst: reduce(lambda x, y: x + ' ' + y, lst)
+
+3. Write a Python function that takes a list of lists of numbers, and returns a new list
+containing the cumulative sum of squares of even numbers in each sublist. 
+Use at least 5 nested lambda expressions in your solution. 
+
+
+	from functools import reduce
+
+	cumulative_sum_of_squares_of_even_numbers = lambda list_of_lists: list(map(lambda sublist: reduce(lambda x, y: x + y, map(lambda num: num ** 2, 	filter(lambda num: num % 2 == 0, sublist))), list_of_lists)))
+
+	# Example usage:
+	list_of_lists = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
+	result = cumulative_sum_of_squares_of_even_numbers(list_of_lists)
+	print(result)  # Output: [4, 52, 128]
+
+4. Rewrite the following program in one line by using nested filter, map and reduce
+functions:
+
+	from functools import reduce
+	nums = [1,2,3,4,5,6]
+	sum_squared = reduce(lambda x, y: x + y, map(lambda x: x**2, filter(lambda x: x % 2 == 0, nums)))
+	print(sum_squared)
+
+5. Write a one-line function that accepts as an input a list of lists containing strings
+and returns a new list containing the number of palindrome strings in each sublist.
+Use nested filter/map/reduce functions.
+
+	from functools import reduce
+
+	count_palindromes = lambda list_of_lists: list(map(lambda sublist: reduce(lambda x, y: x + 1 if y == y[::-1] else x, filter(lambda x: isinstance(x, 	str), sublist), 0), list_of_lists))
+
+6. 
+
+the generate_values function is not explicitly called to completion. Instead, a list comprehension [square(x) for x in generate_values()] is used directly. 
+This creates a generator expression, which lazily generates values from the generate_values function as they are needed by the square function.
+As a result, the generate_values function is only called as many times as necessary to produce the required values for squaring. This demonstrates lazy evaluation, where computations are deferred until their results are actually required.
+
+In summary, lazy evaluation defers the evaluation of expressions until their results are needed, allowing for more efficient use of resources and potentially avoiding unnecessary computations. 
+In the provided program, lazy evaluation is demonstrated by delaying the generation and processing of values until they are actually used in the list comprehension.
+
+
+
+
+
+
