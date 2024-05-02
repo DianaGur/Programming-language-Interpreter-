@@ -1,15 +1,22 @@
 <program> ::= <expression>
-<expression> ::= <atom> | <if statment> | <arithmetic> | <loop>
-<loop> ::= "while" <condition> ":" <expression>
-<if statment> ::= "if" <condition> "then" <if statment> | "if" <condition> "then" <arithmetic> | "if" <condition> "then" <loop>
-<condition> ::= (<logic operation> <atom> <atom>) | (<logic operation> <arithmetic> <atom>) | (<logic operation> <arithmetic> <arithmetic>)
-<arithmetic> ::= (<operation>' '<atom>' '<atom>) | (<operation>' '<arithmetic>' '<atom>) | (<operation>' '<arithmetic>' '<arithmetic>)
+<expression> ::= <atom> | <if statment> | <arithmetic> | <loop> | <placement>
+<loop> ::= "while" <condition> ":" <expression> 
+<if statment> ::= "if" <condition> "then" <if statment> | "if" <condition> "then" <arithmetic> | "if" <condition> "then" <loop> |"if" <condition> "then" <placement>
+<condition> ::= <parent open> <atom> <logic operation> <atom> <parent close> | <parent open> <arithmetic> <logic operation> <atom> <parent close> 
+                      | <parent open> <arithmetic> <logic operation> <arithmetic> <parent close>
+<placement> ::= <parent open> <parameters> <saver> <atom> <parent close> | <parent open> <parameters> <saver> <arithmetic> <parent close> 
+                  | <parent open> <parameters> <saver> <parameters> <parent close>
+<arithmetic> ::= <parent open> <operation>' '<atom>' '<atom> <parent close> | <parent open> <operation>' '<arithmetic>' '<atom> <parent close> |
+                          | <parent open> <operation>' '<arithmetic>' '<arithmetic> <parent close>
 <atom> ::= <number> | <parameters>
-<parameters> ::= <identifier> | <identifier> <parameters>
+<parameters> ::= <identifier> | <identifier> <parameters>  
 <identifier> ::= <letter> <alphanumeric>*
-<integer> ::= <digit>+
+<integer> ::= <digit>+ 
+<alphanumeric> ::= <letter> | <digit>
+<saver> ::= "="
+<parent open> ::= "("
+<parent close> ::= ")"
 <logic operation> ::= "<" | ">" | "=="
 <operation> ::= "+" | "-" | "*" | "/" 
-<alphanumeric> ::= <letter> | <digit>
 <letter> ::= "a" | "b" | ... | "z" 
 <digit> ::= "0" | "1" | ... | "9"
