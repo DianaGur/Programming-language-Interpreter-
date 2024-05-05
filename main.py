@@ -4,7 +4,8 @@ class Prog_mem:
     def __init__(self):
         self.memory = {}        # var dictionary
         self.stack = []    # First cartridge that contains operators
-        self.factors = []      # Second cartridge to operate math calculations
+        self.printable = True
+        self.equals = '='
         self.t_operate = ('+', '-', '*', '/')
         self.t_logic = ('==', '>', '<')
         self.key_words = ('if', 'while', 'then')
@@ -13,20 +14,31 @@ class Prog_mem:
         self.loop = False           # Track the nested loops up to 3 levels
         self.track_loop = 0
 
-    def search(self, variable):
+    def get_var(self, variable):   ### need to hanled if var not found
+        if len(self.memory.keys()) == 0:
+            print("Could not find variable in the program memory")
+            return False
         for var in self.memory.keys():
             if var == variable:
                 return self.memory.get(var)
 
+        print("Could not find variable in the program memory")
+        return False
+
     def insert_var(self, variable, value):
 
-        if len(self.memory.keys()) >= 10:
-            return print("Maximum amount of variables has been reached")
         for letter in self.memory.keys():
             if letter == variable:
                 self.memory.pop(letter)
+                self.memory.update({variable: value})     # updates existed value in the memory
+                return True
 
-        self.memory.update({variable: value})      #inserts the new variable in the dictionary
+        if len(self.memory.keys()) == 10:
+            print("Maximum amount of variables has been reached")
+            return False
+        else:
+            self.memory.update({variable: value})  # insert new value to the memory
+            return True
 
     def find_oper(self, operator):
         for c in self.t_operate:
@@ -47,13 +59,6 @@ class Prog_mem:
 
 
 def is_valid(inpt):
-     """
-       This function classifies the expression that was given to her from the user.
-       After the classification, the function sends the list to the processing functions
-       in order to get the right output.
-       :param inpt: List of strings that was made from the string input of the user
-       :return: None.
-       """
     if len(inpt) == 0:
         raise SyntaxError('Unexpected EOF while parsing')
     if len(inpt) >= 100:
@@ -104,6 +109,8 @@ def logic_exp(exp_logic, c):
     :param exp_logic: List of strings that represent condition
     :return: boolean
     """
+    memory.printable = False          # disable printing the calculation of the math result
+
     x = []
     y = []
     for i in range(len(exp_logic)):
@@ -121,7 +128,7 @@ def logic_exp(exp_logic, c):
         if part1.isdigit():
             part1 = int(part1)
         else:
-            part1 = memory.search(part1)
+            part1 = memory.get_var(part1)
 
     # part 1 is None?
     if len(y) > 1:
@@ -131,8 +138,9 @@ def logic_exp(exp_logic, c):
         if part2.isdigit():
             part2 = int(part2)
         else:
-            part2 = memory.search(part2)
+            part2 = memory.get_var(part2)
 
+    memory.printable = True
     if c == '>':
         print(part1 > part2)
         return part1 > part2
@@ -164,12 +172,21 @@ def calc_result(inpt):
         if inpt[index + 1].isdigit():           # get first number ofter the operator
             x = int(inpt[index + 1])
         else:
-            x = int(memory.search(inpt[index + 1]))
+            x = memory.get_var(inpt[index + 1])
+            if x != False:
+                x = int(x)
+            else:
+                return
 
         if inpt[index + 2].isdigit():           # get second number ofter the operator
             y = int(inpt[index + 2])
         else:
-            y = int(memory.search(inpt[index + 2]))
+            y = int(memory.get_var(inpt[index + 2]))
+            if y != False:
+                y = int(y)
+            else:
+                return
+
 
         if operation == '+':
             x = x + y
@@ -184,11 +201,17 @@ def calc_result(inpt):
         inpt.pop(index + 2)
         inpt.pop(index + 2)
         inpt.append(str(int(x)))    # Dealing with float numbers by converting them to int and then to string
+    if memory.printable:
+        print(inpt[0])
     return inpt.pop(0)
 
 
 # Helper function to convert tokens to appropriate data types
 def atom(token):
+    """
+       :param inpt:
+       :return:
+       """
     try:
         return int(token)
     except ValueError:
@@ -218,11 +241,35 @@ def classifier(inpt):
         while_handler(inpt)
 
     else:
-        if inpt[0] == '=':
-            pass
-        else:
-            res = (calc_result(inpt))
-            return res
+
+        for i in inpt:                   # loop that searches for significant characters > =
+            if memory.find_logic(i):
+                c = i
+                print(logic_exp(inpt, c))
+                return
+            elif i == memory.equals:
+                placement_handler(inpt)
+                return
+        res = (calc_result(inpt))      # In case we haven`t found any significant characters, it is a math expression
+        return res
+
+
+def placement_handler(expression):    # [ '9']   identifier = [ 'a']
+
+    memory.printable = False
+    identifier = []
+    for k in range(len(expression)):
+        part = expression.pop(0)
+        if part == '=':
+            break
+        identifier.append(part)
+
+    identifier = str(identifier.pop(0))
+    value = expression.copy()
+    value = calc_result(value)
+    memory.insert_var(identifier, value)
+    memory.printable = True
+
 
 
 def if_handler(expression):
@@ -286,20 +333,18 @@ def while_handler(inpt):
 
 #if __name__ == '__main__':
 
-memory = Prog_mem()   # consider to make an global var
+memory = Prog_mem()   # consider to make a global var
 while True:
     str_inpt = input(">>>")
-    print(str_inpt)
 
     if str_inpt == 'close':      # Ends the program
-        break
-        # Sample Lisp code
-        #need to be added
+        exit(0)
+
+
+    # Sample of program langauge
+    
+
+
     is_valid(str_inpt)
-        # Tokenize and parse the code
     code_inpt = tokenize(str_inpt)
     classifier(code_inpt)
-        #code_inpt = tokenize(str_inpt)
-        #print(code_inpt)
-        # parse(code_inpt, mem)
-        #classifier(code_inpt)
