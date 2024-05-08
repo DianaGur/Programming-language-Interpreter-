@@ -69,6 +69,17 @@ class ProgMem:
             return True
 
     def find_operator(self, operator):
+
+        """
+            Check if the given operator is a mathematical operator.
+
+            Parameters:
+            - operator (str): The operator to check.
+
+            Returns:
+            - bool: True if the operator is a mathematical operator, False otherwise.
+        """
+        
         for c in self.t_math_operators:
             if c == operator:
                 return True
@@ -76,6 +87,17 @@ class ProgMem:
         return False
 
     def find_condition_operator(self, symbol):
+
+        """
+            Check if the given symbol is a comparison operator.
+
+            Parameters:
+            - symbol (str): The symbol to check.
+
+            Returns:
+            - bool: True if the symbol is a comparison operator, False otherwise.
+        """
+        
         for operator in self.t_condition_operators:
             if operator == symbol:
                 return True
