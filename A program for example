@@ -1,0 +1,22 @@
+# Variable assignment
+length = 5
+width = 3
+
+# Mathematical expression evaluation
+area = length * width
+print("Area:", area)
+
+# If-then statement
+if area > 10:
+    print("The area is greater than 10.")
+else:
+    print("The area is not greater than 10.")
+
+# While loop
+counter = 0
+while counter < 5:
+    print("Counter:", counter)
+    counter += 1
+
+# Variable placement
+result = area * 2
