@@ -1,6 +1,12 @@
 # -----------------------------------------Class Functions-----------------------------------------------
 
 class ProgMem:
+
+    """
+    This class represents the program memory for the interpreter.
+    It manages variables, operators, and control flow constructs.
+    """
+    
     def __init__(self):
         self.memory = {}  # var dictionary
         self.stack = []  # First cartridge that contains operators
