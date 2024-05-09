@@ -51,15 +51,23 @@ print(concat_strings(strings))  # Output: hello world how are you
 
 
 def cumulative_sum_of_squares_of_even_numbers(list_of_lists1):
-    return [reduce(lambda x, y: x + y,  # Reduce to get the sum map(lambda num: num ** 2,  # Map to square each number
-            filter(lambda num: num % 2 == 0, sublist))  # Filter to select even numbers
-            for sublist in list_of_lists1]  # Iterate over each sublist
+    return [
+        reduce(
+            lambda x, y: x + y,  # Reduce to get the sum
+            map(
+                lambda num: num ** 2,  # Map to square each number
+                filter(
+                    lambda num: num % 2 == 0, sublist  # Filter to select even numbers
+                )
+            )
+        )
+        for sublist in list_of_lists1  # Iterate over each sublist
+    ]
 
 
 list_of_lists = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]
 result = cumulative_sum_of_squares_of_even_numbers(list_of_lists)
-print(result)  # Output: [4, 52, 128]
-
+print(result)  # Output: [4, 52, 64]
 
 # ----------------------------------------Question 4--------------------------------------------
 
