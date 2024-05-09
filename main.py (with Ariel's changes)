@@ -1,12 +1,11 @@
 # -----------------------------------------Class Functions-----------------------------------------------
 
 class ProgMem:
-
     """
     This class represents the program memory for the interpreter.
     It manages variables, operators, and control flow constructs.
     """
-    
+
     def __init__(self):
         self.memory = {}  # var dictionary
         self.stack = []  # First cartridge that contains operators
@@ -18,13 +17,11 @@ class ProgMem:
         self.t_condition_operators = ('==', '>', '<')
 
         self.condition_key_words = ('if', 'while', 'then')
-        self.condition_flag = False  # Track the nested conditions up to 3 levels
-        self.track_condition = 0
+        self.condition_flag = False  # Track the printings of the conditions in loops or if conditions
+        self.track_nested = 0     # Track the nested conditions/loops up to 3 levels
+        self.abort = False        # Dealing with outer while loops in nested loops.
 
-        self.loop_flag = False  # Track the nested loops up to 3 levels
-        self.track_loop = 0
-
-    def get_variable(self, variable):  # TODO: need to handled if variable is not found
+    def get_variable(self, variable):
         """
             Get the value of a variable from the program memory.
             Parameters:
@@ -34,7 +31,8 @@ class ProgMem:
         """
         # check if empty:
         if len(self.memory.keys()) == 0:
-            print("Could not find variable in the program memory")
+            if self.printable:
+                print("Could not find variable in the program memory")
             return False
 
         # check if wanted variable exist:
@@ -50,7 +48,8 @@ class ProgMem:
         #     return False
 
         # if didn't find the wanted variable:
-        print("Could not find variable in the program memory")
+        if self.printable:
+            print("Could not find variable in the program memory")
         return False
 
     def insert_variable(self, variable, value):
@@ -79,7 +78,7 @@ class ProgMem:
             Returns:
             - bool: True if the operator is a mathematical operator, False otherwise.
         """
-        
+
         for c in self.t_math_operators:
             if c == operator:
                 return True
@@ -97,7 +96,7 @@ class ProgMem:
             Returns:
             - bool: True if the symbol is a comparison operator, False otherwise.
         """
-        
+
         for operator in self.t_condition_operators:
             if operator == symbol:
                 return True
@@ -107,32 +106,31 @@ class ProgMem:
     def naming_validation(self, ):  # TODO: checks the first part of expression until the '='
         pass
 
+
 # -----------------------------------------Main Functions-----------------------------------------------
 
 
-def is_valid(inpt):  # TODO: we need to think if we want to stop program with error or keep going
+def is_valid(expression):  # TODO: we need to think if we want to stop program with error or keep going
     """
         Check if the input string meets certain criteria.
 
         Parameters:
         inpt(str): The input string to be validated.
 
-        Raises:
-        SyntaxError: If the input is empty, has a length greater than or equal to 30 characters,
-                     or has an unbalanced number of parentheses.
-
-        Returns: None
+        Returns: True if the input is valid to the PL, False if the input is nor valid.
     """
 
     # checks bounds of  the string input
-    if len(inpt) == 0:
-        raise SyntaxError('Unexpected EOF while parsing')
-    if len(inpt) >= 100:
-        raise SyntaxError('Unsuitable length of the input, length should be less than 100 chars')
+    if len(expression) == 0:
+        print('Unexpected EOF while parsing')
+        return False
+    if len(expression) >= 150:
+        print('Unsuitable length of the input, length should be less than 100 chars')
+        return False
 
     # checks consistency with brackets:
     counter = 0
-    for char in inpt:
+    for char in expression:
         if char == '(':
             counter += 1
         if char == ')':
@@ -140,10 +138,13 @@ def is_valid(inpt):  # TODO: we need to think if we want to stop program with er
 
     # if inconsistent:
     if counter != 0:
-        raise SyntaxError('Unbalanced number of brackets')
+        print('Unbalanced number of brackets')
+        return False
+
+    return True
 
 
-def tokenize(inpt):
+def tokenize(expression):
     """
     Tokenize a string by splitting it into words and removing parentheses.
 
@@ -161,10 +162,10 @@ def tokenize(inpt):
     #         char_list.append(char)
     # return char_list
 
-    return inpt.replace('(', '').replace(')', '').split()
+    return expression.replace('(', '').replace(')', '').split()
 
 
-def logic_exp(exp_logic, c):
+def logic_exp(exp_logic, c, printable):
     """
     Calculate the result of a logical expression from a list of strings.
 
@@ -175,8 +176,6 @@ def logic_exp(exp_logic, c):
     Returns:
     bool: Result of the logical expression.
     """
-
-    memory.printable = False  # disable printing the calculation of the math result
 
     x = []
     y = []
@@ -189,39 +188,36 @@ def logic_exp(exp_logic, c):
     y = exp_logic.copy()
 
     if len(x) > 1:
-        part1 = int(classifier(x))
+        part1 = int(classifier(x, False))
     else:
         part1 = x.pop(0)
         if part1.isdigit():
             part1 = int(part1)
         else:
-            part1 = memory.get_variable(part1)
+            part1 = int(memory.get_variable(part1))
 
     # part 1 is None?
     if len(y) > 1:
-        part2 = int(classifier(y))
+        part2 = int(classifier(y, False))
     else:
         part2 = y.pop(0)
         if part2.isdigit():
             part2 = int(part2)
         else:
-            part2 = memory.get_variable(part2)
-
-    memory.printable = True
+            part2 = int(memory.get_variable(part2))
     if c == '>':
-        print(part1 > part2)
-        return part1 > part2
+        logic = part1 > part2
     elif c == '<':
-        print(part1 < part2)
-        return part1 < part2
+        logic = part1 < part2
     elif c == '==':
-        print(part1 == part2)
-        return part1 == part2
+        logic = part1 == part2
 
-    return False
+    if printable:
+        print(logic)
+    return logic
 
 
-def calc_result(inpt):
+def calc_result(math_exp, printable):
     """
     Evaluate a math expression with prefix operators.
 
@@ -231,29 +227,28 @@ def calc_result(inpt):
     Returns:
     str or None: The result of the expression as a string, or None if there was an error.
     """
-
-    while len(inpt) > 1:
+    while len(math_exp) > 1:
         index = 0
         operation = ''
-        for i in range(len(inpt) - 1, -1, -1):  # Search for the first operator for the end fo the list
+        for i in range(len(math_exp) - 1, -1, -1):  # Search for the first operator for the end fo the list
             index = index - 1
-            if memory.find_operator(inpt[i]):
-                operation = inpt[i]
+            if memory.find_operator(math_exp[i]):
+                operation = math_exp[i]
                 break
-        if inpt[index + 1].isdigit():  # get first number ofter the operator
-            x = int(inpt[index + 1])
+        if math_exp[index + 1].isdigit():  # get first number ofter the operator
+            x = int(math_exp[index + 1])
         else:
-            x = memory.get_variable(inpt[index + 1])
-            if x != False:
+            x = memory.get_variable(math_exp[index + 1])
+            if x is not False:
                 x = int(x)
             else:
                 return
 
-        if inpt[index + 2].isdigit():  # get second number ofter the operator
-            y = int(inpt[index + 2])
+        if math_exp[index + 2].isdigit():  # get second number ofter the operator
+            y = int(math_exp[index + 2])
         else:
-            y = int(memory.get_variable(inpt[index + 2]))
-            if y != False:
+            y = int(memory.get_variable(math_exp[index + 2]))
+            if y is not False:
                 y = int(y)
             else:
                 return
@@ -267,13 +262,13 @@ def calc_result(inpt):
         elif operation == '/':
             x = x / y
 
-        inpt.pop(index + 2)
-        inpt.pop(index + 2)
-        inpt.pop(index + 2)
-        inpt.append(str(int(x)))  # Dealing with float numbers by converting them to int and then to string
-    if memory.printable:
-        print(inpt[0])
-    return inpt.pop(0)
+        math_exp.pop(index + 2)
+        math_exp.pop(index + 2)
+        math_exp.pop(index + 2)
+        math_exp.append(str(int(x)))  # Dealing with float numbers by converting them to int and then to string
+    if printable:
+        print(math_exp[0])
+    return math_exp.pop(0)
 
 
 # Helper function to convert tokens to appropriate data types
@@ -302,7 +297,7 @@ def atom(token):
 
 
 # Define the evaluator to execute Lisp expressions
-def classifier(list_inpt):
+def classifier(list_inpt, printable):
     """
         Classify and handle different types of statements from the given input list.
 
@@ -333,17 +328,19 @@ def classifier(list_inpt):
 
         for element in list_inpt:  # loop that searches for significant characters > =
             if memory.find_condition_operator(element):
+                memory.printable = True
                 c = element
-                print(logic_exp(list_inpt, c))
+                logic_exp(list_inpt, c, printable)
+                memory.printable = False
                 return
             elif element == memory.equals_operator:
-                placement_handler(list_inpt)
+                placement_handler(list_inpt, printable)
                 return
-        res = (calc_result(list_inpt))  # In case we have not found any significant characters, it is a math expression
+        res = (calc_result(list_inpt, printable))  # In case we have not found any significant characters, it is a math expression
         return res
 
 
-def placement_handler(expression):  # [ '9']   identifier = [ 'a']
+def placement_handler(expression, printable):  # [ '9']   identifier = [ 'a']
     """
         Handle variable assignment from a given expression.
 
@@ -358,7 +355,6 @@ def placement_handler(expression):  # [ '9']   identifier = [ 'a']
         None
     """
 
-    memory.printable = False
     identifier = []
     for k in range(len(expression)):
         part = expression.pop(0)
@@ -366,11 +362,20 @@ def placement_handler(expression):  # [ '9']   identifier = [ 'a']
             break
         identifier.append(part)
 
-    identifier = str(identifier.pop(0))
+    identifier = ' '.join(identifier)
     value = expression.copy()
-    value = calc_result(value)
-    memory.insert_variable(identifier, value)
-    memory.printable = True
+
+    if len(value) == 1 and value[0].isdigit() is False:
+
+        value = memory.get_variable(value[0])
+        if value is False:
+            return
+        else:
+            memory.insert_variable(identifier, value)
+            return
+
+    value = calc_result(value, False)
+    memory.insert_variable(identifier, int(value))
 
 
 def if_handler(expression):
@@ -387,7 +392,11 @@ def if_handler(expression):
         Returns:
         None
     """
-
+    memory.condition_flag = True  # disable printing the calculation of the math result
+    memory.track_nested += 1
+    if memory.track_nested > 3:
+        print("Too many nested loops or condotions, please try again")
+        return
     condition = []
     c = ' '
     for i in range(len(expression)):
@@ -399,16 +408,19 @@ def if_handler(expression):
             condition.append(part)
         else:
             condition.append(part)
-    print(condition)
+    # print(condition)
     body = expression.copy()
-    print(body)
-    if logic_exp(condition, c):
-        classifier(body)
+    # print(body)
+    memory.printable = True
+    if logic_exp(condition, c, False):
+        classifier(body, True)
+        memory.track_nested -= 1
     else:
-        return print("-")  # indication hasnt enter the if
+        memory.track_nested -= 1
+        return print("-")  # indication if the program didn`t entered the if.
 
 
-def while_handler(inpt):
+def while_handler(expression):
     """
         Handle the 'while' loop from the given input.
 
@@ -422,10 +434,18 @@ def while_handler(inpt):
         Returns:
         None
     """
-
     condition = []
     c = ' '
-    for part in inpt:
+
+    memory.printable = False
+    memory.track_nested += 1
+    if memory.track_nested > 3:
+        print("Too many nested loops or condotions, please try again")
+        memory.abort = True
+        return
+
+    for i in range(len(expression)):
+        part = expression.pop(0)
         if part == ':':
             break
         elif memory.find_condition_operator(part):
@@ -433,17 +453,23 @@ def while_handler(inpt):
             condition.append(part)
         else:
             condition.append(part)
-        inpt.pop(0)
-    print(condition)
-    body = inpt.copy()
-    inpt.clear()
-    while logic_exp(condition, c):
-        classifier(body)
+    body = ' '.join(expression.copy()).split(',')
+    expression.clear()
+    while logic_exp(condition.copy(), c, False):
+
+        for part in body:
+            if memory.abort:
+                return
+            token_part = tokenize(part)
+            classifier(token_part, True)
+
+    memory.track_nested -= 1
+    memory.printable = True
     return print("end")  # indication for finishing the
 
-# ------------------------------------------------Main-------------------------------------------------------
-# if __name__ == '__main__':
 
+# ------------------------------------------------Main-------------------------------------------------------
+# Main section of the program
 
 memory = ProgMem()  # consider to make a global var
 while True:
@@ -454,35 +480,51 @@ while True:
     # ALTERNATIVE: adding or 'Close'
 
     # Sample of program langauge
+    sample = ['( * 3 4 )', '( + ( * 3 7 ) ( / 6 2 ) )', '( a = 8 )', '(( * 6 5 )' 
+              '( a > 3 )', '( a > ( * 3 4 ))', 'length = 5', 'width = 3',
+              'area = ( * length  width )', '( * area 1 )', 'if ( area > 10 ) then ( * area 1 )',
+              'if ( area == 15 ) then if ( length < 7 ) then if ( width > 2 ) then if ( length == width ) then ( * area 1 )',
+              '( counter = 0 )', 'while (counter < 5) : (* counter 1 ) , ( counter = ( + counter 1) )',
+              'while (width == 3 ) : while ( width < 4 ) : while ( width < 5 ) : while ( width > 2 ): ( width = 10 )',
+              '(volume = ( * area 2 ) )', '( area = width )', '( * volume 1 )', '( * area 1 )']
+
+    if str_inpt == 'sample':
+        for inpt in sample:
+            if is_valid(inpt):
+                str_inpt = inpt
+                # tokenizing the input for convenient use later:
+                tokenized_list = tokenize(str_inpt)
+
+                # starting to work with input:
+                classifier(tokenized_list, True)
+                if memory.abort:
+                    memory.abort = False  # Returns the state of the program to the previous state
 
     # checking validity of user's input:
-    is_valid(str_inpt)
+    if is_valid(str_inpt):
 
-    # tokenizing the input for convenient use later:
-    tokenized_list = tokenize(str_inpt)
+        # tokenizing the input for convenient use later:
+        tokenized_list = tokenize(str_inpt)
 
-    # starting to work with input:
-    classifier(tokenized_list)
-
+        # starting to work with input:
+        classifier(tokenized_list, True)
+        if memory.abort:
+            memory.abort = False   # Returns the state of the program to the previous state
 # --------------------------------------------Garbage---------------------------------------------------------
 
 
-
-
-
-
-    # # Define the parser to generate an Abstract Syntax Tree (AST)
-    # def parse(tokens, mem):
-    #
-    #     if len(tokens) > 1:
-    #         mem.factors = tokens.copy()
-    #         # while len(tokens):
-    #         #     part = tokens.pop(0)
-    #         #     if part.isdigit():
-    #         #         mem.factors.append(int(part))
-    #         #     elif part != ')' and part != '(':
-    #         #         mem.operators.append(part)
-    #         return
-    #
-    #     token = tokens.pop(0)
-    #     return atom(token)
+# # Define the parser to generate an Abstract Syntax Tree (AST)
+# def parse(tokens, mem):
+#
+#     if len(tokens) > 1:
+#         mem.factors = tokens.copy()
+#         # while len(tokens):
+#         #     part = tokens.pop(0)
+#         #     if part.isdigit():
+#         #         mem.factors.append(int(part))
+#         #     elif part != ')' and part != '(':
+#         #         mem.operators.append(part)
+#         return
+#
+#     token = tokens.pop(0)
+#     return atom(token)
