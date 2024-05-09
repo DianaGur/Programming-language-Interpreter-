@@ -1,22 +1,29 @@
+# simple expressions
+( * 3 4 )
+( + ( * 3 7 ) ( / 6 2 ) )
+( a = 8 )
+(( * 6 5 )
+( a > ( * ( + 6 1 ) 2 ) )
+( a < ( * 3 4 ) )
+
+
 # Variable assignment
-length = 5
-width = 3
+( length = 5 )
+( width = 3 )
 
 # Mathematical expression evaluation
-area = length * width
-print("Area:", area)
+area = ( * length  width )
+( * area 1 )
 
 # If-then statement
-if area > 10:
-    print("The area is greater than 10.")
-else:
-    print("The area is not greater than 10.")
-
+if ( area > 10 ) then ( * area 1 )
+if ( area == 15 ) then if ( length < 7 ) then if ( width > 2 ) then if ( length == width ) then ( * area 1 )
 # While loop
-counter = 0
-while counter < 5:
-    print("Counter:", counter)
-    counter += 1
-
+( counter = 0 )
+while (counter < 5) : (* counter 1 ) , ( counter = ( + counter 1) )
+while (width == 3 ) : while ( width < 4 ) : while ( width < 5 ) : while ( width > 2 ): ( width = 10 )
 # Variable placement
-result = area * 2
+(volume = ( * area 2 ) )
+( area = width )
+( * volume 1 )
+( * area 1 )
