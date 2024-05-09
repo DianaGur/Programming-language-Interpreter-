@@ -10,8 +10,6 @@ class ProgMem:
         self.memory = {}  # var dictionary
         self.stack = []  # First cartridge that contains operators
 
-        self.printable = True
-
         self.equals_operator = '='
         self.t_math_operators = ('+', '-', '*', '/')
         self.t_condition_operators = ('==', '>', '<')
@@ -31,8 +29,7 @@ class ProgMem:
         """
         # check if empty:
         if len(self.memory.keys()) == 0:
-            if self.printable:
-                print("Could not find variable in the program memory")
+            print("Could not find variable in the program memory")
             return False
 
         # check if wanted variable exist:
@@ -48,8 +45,7 @@ class ProgMem:
         #     return False
 
         # if didn't find the wanted variable:
-        if self.printable:
-            print("Could not find variable in the program memory")
+        print("Could not find variable in the program memory")
         return False
 
     def insert_variable(self, variable, value):
@@ -271,7 +267,6 @@ def calc_result(math_exp, printable):
     return math_exp.pop(0)
 
 
-# Helper function to convert tokens to appropriate data types
 def atom(token):
     """
        This function converts the given token into an appropriate atomic value.
@@ -296,7 +291,6 @@ def atom(token):
             return token
 
 
-# Define the evaluator to execute Lisp expressions
 def classifier(list_inpt, printable):
     """
         Classify and handle different types of statements from the given input list.
@@ -328,10 +322,10 @@ def classifier(list_inpt, printable):
 
         for element in list_inpt:  # loop that searches for significant characters > =
             if memory.find_condition_operator(element):
-                memory.printable = True
+
                 c = element
                 logic_exp(list_inpt, c, printable)
-                memory.printable = False
+
                 return
             elif element == memory.equals_operator:
                 placement_handler(list_inpt, printable)
@@ -394,7 +388,7 @@ def if_handler(expression):
         Returns:
         None
     """
-    memory.condition_flag = True  # disable printing the calculation of the math result
+
     memory.track_nested += 1
     if memory.track_nested > 3:
         print("Too many nested loops or condotions, please try again")
@@ -413,7 +407,7 @@ def if_handler(expression):
     # print(condition)
     body = expression.copy()
     # print(body)
-    memory.printable = True
+
     if logic_exp(condition, c, False):
         classifier(body, True)
         memory.track_nested -= 1
@@ -439,7 +433,6 @@ def while_handler(expression):
     condition = []
     c = ' '
 
-    memory.printable = False
     memory.track_nested += 1
     if memory.track_nested > 3:
         print("Too many nested loops or condotions, please try again")
@@ -466,7 +459,7 @@ def while_handler(expression):
             classifier(token_part, True)
 
     memory.track_nested -= 1
-    memory.printable = True
+
     return print("end")  # indication for finishing the
 
 
@@ -512,21 +505,4 @@ while True:
         classifier(tokenized_list, True)
         if memory.abort:
             memory.abort = False   # Returns the state of the program to the previous state
-# --------------------------------------------Garbage---------------------------------------------------------
 
-
-# # Define the parser to generate an Abstract Syntax Tree (AST)
-# def parse(tokens, mem):
-#
-#     if len(tokens) > 1:
-#         mem.factors = tokens.copy()
-#         # while len(tokens):
-#         #     part = tokens.pop(0)
-#         #     if part.isdigit():
-#         #         mem.factors.append(int(part))
-#         #     elif part != ')' and part != '(':
-#         #         mem.operators.append(part)
-#         return
-#
-#     token = tokens.pop(0)
-#     return atom(token)
