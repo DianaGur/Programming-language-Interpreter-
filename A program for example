@@ -1,29 +1,31 @@
 # simple expressions
-( * 3 4 )
-( + ( * 3 7 ) ( / 6 2 ) )
-( a = 8 )
-(( * 6 5 )
-( a > ( * ( + 6 1 ) 2 ) )
-( a < ( * 3 4 ) )
+( * 3 4 )     output: 12
+( + ( * 3 7 ) ( / 6 2 ) )     output: 24 
+( a = 8 )      output: None
+(( * 6 5 )     output: error 
+( a > ( * ( + 6 1 ) 2 ) )    output: False 
+( a < ( * 3 4 ) )            output: True 
 
 
 # Variable assignment
-( length = 5 )
-( width = 3 )
+( length = 5 )      output: None
+( width = 3 )       output: None
 
 # Mathematical expression evaluation
-area = ( * length  width )
-( * area 1 )
+( area = ( * length  width ) )    output: None
+( * area 1 )                   output: 15 
 
 # If-then statement
-if ( area > 10 ) then ( * area 1 )
-if ( area == 15 ) then if ( length < 7 ) then if ( width > 2 ) then if ( length == width ) then ( * area 1 )
+if ( area > 10 ) then ( * area 1 )     output: 15 
+if ( area == 15 ) then if ( length < 7 ) then if ( width > 2 ) then if ( length == width ) then ( * area 1 )   output: error 
+
 # While loop
-( counter = 0 )
-while (counter < 5) : (* counter 1 ) , ( counter = ( + counter 1) )
-while (width == 3 ) : while ( width < 4 ) : while ( width < 5 ) : while ( width > 2 ): ( width = 10 )
+( counter = 0 )     output: None 
+while (counter < 5) : ( * counter 1 ) , ( counter = ( + counter 1) )    output: 0 1 2 3 4 end
+while (width == 3 ) : while ( width < 4 ) : while ( width < 5 ) : while ( width > 2 ): ( width = 10 ) output: error 
+
 # Variable placement
-(volume = ( * area 2 ) )
-( area = width )
-( * volume 1 )
-( * area 1 )
+( volume = ( * area 2 ) )  output: None
+( area = width )   output: None 
+( * volume 1 )     output: 30
+( * area 1 )       output: 3
